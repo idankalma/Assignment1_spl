@@ -8,11 +8,53 @@ Playlist::Playlist(const std::string& name)
 }
 // TODO: Fix memory leaks!
 // Students must fix this in Phase 1
+/**
+ * destructor
+ */
 Playlist::~Playlist() {
     #ifdef DEBUG
     std::cout << "Destroying playlist: " << playlist_name << std::endl;
     #endif
+    PlaylistNode* current = head;
+
+    while(current){
+        PlaylistNode* next = current->next;
+        delete current->track;
+        delete current;
+        current = next;
+    }
 }
+
+/**
+ * Copy constructor
+ */
+/*Playlist:: Playlist(const Playlist& other) : head(nullptr), playlist_name(other.playlist_name), track_count(0) {
+    PlaylistNode* current = other.head;
+    while (current) {
+        add_track(current->track);
+        current = current->next;
+    }
+}*/
+
+/**
+ * Copy Assignment operator
+ */
+/*Playlist& Playlist::operator=(const Playlist& other) {
+    if (this != &other) {
+        while (!is_empty()) {
+            remove_track(head->track->get_title());
+        }
+        playlist_name = other.playlist_name;
+
+        PlaylistNode* current = other.head;
+        while (current) {
+            add_track(current->track);
+            current = current->next;
+        }
+    }
+    return *this;
+}*/
+
 
 void Playlist::add_track(AudioTrack* track) {
     if (!track) {
@@ -49,6 +91,9 @@ void Playlist::remove_track(const std::string& title) {
         } else {
             head = current->next;
         }
+
+        delete current -> track;
+        delete current;
 
         track_count--;
         std::cout << "Removed '" << title << "' from playlist" << std::endl;
