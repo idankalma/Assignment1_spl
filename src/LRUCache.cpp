@@ -26,7 +26,7 @@ bool LRUCache::put(PointerWrapper<AudioTrack> track) {
     size_t idx = findSlot(title);
 
     if(idx != max_size){
-        slots[idx].update_access(access_counter++);
+        slots[idx].access(access_counter++);
         return false;
     }
 
@@ -41,7 +41,7 @@ bool LRUCache::put(PointerWrapper<AudioTrack> track) {
     PointerWrapper<AudioTrack> cloend_track (new AudioTrack(track.get()));
     slots[empty_slot].store(std::move(track), access_counter++);
 
-    return is_evicted; 
+    return is_evicted;
 }
 
 bool LRUCache::evictLRU() {

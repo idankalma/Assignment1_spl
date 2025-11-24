@@ -10,7 +10,29 @@ DJControllerService::DJControllerService(size_t cache_size)
  * TODO: Implement loadTrackToCache method
  */
 int DJControllerService::loadTrackToCache(AudioTrack& track) {
-    // Your implementation here 
+    // Your implementation here
+    std::string title = track.get_title();
+
+    if (cache.contains(title)){
+        cache.get(title); // MRU updates in the function get() in "LRUCache"
+        return 1;
+    }
+
+    AudioTrack* cloned_track = track->clone();
+    if(cloned_track == nullptr){
+        std::cerr << "[ERROR] clone() returned nullptr\n";
+        return 0;
+    }
+
+    cloned_track->load(); //the function exist at "LRUCache"
+    cloned_track->analyze_beatgrid();  //the function exist at "LRUCache"
+
+    PointerWrapper<AudioTrack> cloned_wrapper(cloned_track);
+    bool is_evicted = cache.put(std::move(cloned_wrapper));
+
+    if(is_evicted){
+        return -1;
+    }
     return 0; // Placeholder
 }
 
