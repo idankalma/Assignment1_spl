@@ -14,11 +14,11 @@ int DJControllerService::loadTrackToCache(AudioTrack& track) {
     std::string title = track.get_title();
 
     if (cache.contains(title)){
-        cache.get(title); // MRU updates in the function get() in "LRUCache"
+        cache.get(title); // MRU is updated in the function get() in "LRUCache"
         return 1;
     }
 
-    AudioTrack* cloned_track = track->clone();
+    AudioTrack* cloned_track = track.clone();
     if(cloned_track == nullptr){
         std::cerr << "[ERROR] clone() returned nullptr\n";
         return 0;
@@ -51,5 +51,10 @@ void DJControllerService::displayCacheStatus() const {
  */
 AudioTrack* DJControllerService::getTrackFromCache(const std::string& track_title) {
     // Your implementation here
-    return nullptr; // Placeholder
+    AudioTrack* track_ptr = cache.get(track_title);
+
+    if(track_ptr == nullptr){
+        std::cerr << "[ERROR] Track: \"" << track_title << "\" not found in cache\n";
+    }
+    return track_ptr; // Placeholder
 }
