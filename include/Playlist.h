@@ -96,6 +96,13 @@ public:
      */
     std::vector<AudioTrack*> getTracks() const;
 
+    /**
+     * Get the head node of the playlist
+     */
+    PlaylistNode* getHead() const {
+        return head;
+    }
+
 };
 
 

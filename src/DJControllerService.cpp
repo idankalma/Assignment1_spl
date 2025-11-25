@@ -18,8 +18,8 @@ int DJControllerService::loadTrackToCache(AudioTrack& track) {
         return 1;
     }
 
-    AudioTrack* cloned_track = track.clone();
-    if(cloned_track == nullptr){
+    PointerWrapper<AudioTrack> cloned_track = track.clone();
+    if(cloned_track.get() == nullptr){
         std::cerr << "[ERROR] clone() returned nullptr\n";
         return 0;
     }
@@ -27,8 +27,7 @@ int DJControllerService::loadTrackToCache(AudioTrack& track) {
     cloned_track->load(); //the function exist at "LRUCache"
     cloned_track->analyze_beatgrid();  //the function exist at "LRUCache"
 
-    PointerWrapper<AudioTrack> cloned_wrapper(cloned_track);
-    bool is_evicted = cache.put(std::move(cloned_wrapper));
+    bool is_evicted = cache.put(std::move(cloned_track));
 
     if(is_evicted){
         return -1;

@@ -42,7 +42,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
 
     PointerWrapper<AudioTrack> cloned_track(track.clone());
 
-    if (cloned_track == nullptr) {
+    if (cloned_track.get() == nullptr) {
         std::cout << "[ERROR] Track: \"" << track.get_title() << "\" failed to clone\n";
         return -1;
     }
@@ -51,7 +51,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
     std::cout << "[Deck Switch] Target deck: " << target << "\n";
 
     if(decks[target] != nullptr){
-        delete deck[target];
+        delete decks[target];
         decks[target] = nullptr;
     }
 
@@ -111,7 +111,7 @@ bool MixingEngineService::can_mix_tracks(const PointerWrapper<AudioTrack>& track
         return false;
     }
 
-    double diff_bpm = std:abs(decks[active_deck]->get_bpm() - track.get()->get_bpm());
+    double diff_bpm = std::abs(decks[active_deck]->get_bpm() - track.get()->get_bpm());
     return diff_bpm <= bpm_tolerance; // Placeholder
 }
 
@@ -132,8 +132,8 @@ void MixingEngineService::sync_bpm(const PointerWrapper<AudioTrack>& track) cons
     double original_bpm = track.get()->get_bpm();
     double active_bpm = decks[active_deck]->get_bpm();
     double avg_bpm = (original_bpm + active_bpm)/2.0;
-    track.get()->set_bpm(avg_bpm);
+    track.get()->set_bpm((int)avg_bpm);
 
     std::cout << "[Sync BPM] Syncing BPM from " << original_bpm 
-              << " to " << new_bpm << "\n";
+              << " to " << avg_bpm << "\n";
 }
