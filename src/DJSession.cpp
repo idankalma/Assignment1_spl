@@ -12,7 +12,7 @@ DJSession::DJSession(const std::string& name, bool play_all)
     : session_name(name),
     library_service(),
     controller_service(),
-    mixing_engine(),
+    mixing_service(),
     config_manager(),
     session_config(),
     track_titles(),
