@@ -43,12 +43,12 @@ public:
     /**
      * Copy Costructor
      */
-    /*Playlist(const Playlist& other);*/
+    Playlist(const Playlist& other);
 
     /**
     * Copy Assignment Operator
     */
-    /*Playlist& operator=(const Playlist& other);*/
+    Playlist& operator=(const Playlist& other);
 
     /**
      * Add a track to the playlist

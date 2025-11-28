@@ -28,33 +28,38 @@ Playlist::~Playlist() {
 /**
  * Copy constructor
  */
-/*Playlist:: Playlist(const Playlist& other) : head(nullptr), playlist_name(other.playlist_name), track_count(0) {
+Playlist:: Playlist(const Playlist& other) : head(nullptr), playlist_name(other.playlist_name), track_count(0) {
     PlaylistNode* current = other.head;
     while (current) {
-        add_track(current->track);
+         if (current->track) {
+            PointerWrapper<AudioTrack> cloned_wrapper = current->track->clone();
+            AudioTrack* cloned_track = cloned_wrapper.release();
+            add_track(cloned_track);
+        } 
         current = current->next;
     }
-}*/
+}
 
 /**
  * Copy Assignment operator
  */
-/*Playlist& Playlist::operator=(const Playlist& other) {
+Playlist& Playlist::operator=(const Playlist& other) {
     if (this != &other) {
-        while (!is_empty()) {
+        while (head != nullptr) {
             remove_track(head->track->get_title());
         }
         playlist_name = other.playlist_name;
-
         PlaylistNode* current = other.head;
-        while (current) {
-            add_track(current->track);
-            current = current->next;
+        while (current != nullptr) {
+        PointerWrapper<AudioTrack> cloned_wrapper = current->track->clone();
+        AudioTrack* cloned_track = cloned_wrapper.release();
+        add_track(cloned_track);
+        current = current->next;
         }
     }
     return *this;
-}*/
-
+}
+  
 
 void Playlist::add_track(AudioTrack* track) {
     if (!track) {
