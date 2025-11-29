@@ -7,7 +7,7 @@
  * TODO: Implement MixingEngineService constructor
  */
 MixingEngineService::MixingEngineService()
-    : active_deck(0), auto_sync(false), bpm_tolerance(0)
+    : decks(), active_deck(1), auto_sync(false), bpm_tolerance(0)
 {
     // Your implementation here
     decks[0] = nullptr;
@@ -27,7 +27,54 @@ MixingEngineService::~MixingEngineService() {
             delete decks[i];
             decks[i] = nullptr;
         }
+    }
 }
+
+MixingEngineService::MixingEngineService(const MixingEngineService& other)
+    : active_deck(other.active_deck),
+      auto_sync(other.auto_sync),
+      bpm_tolerance(other.bpm_tolerance)
+{
+    #ifdef DEBUG
+    std::cout << "[MixingEngineService] Copy constructor called\n";
+    #endif
+
+    for (size_t i = 0; i < 2; ++i) {
+        if (other.decks[i] != nullptr) {
+            decks[i] = other.decks[i] ? other.decks[i]->clone().release() : nullptr;        
+        } 
+        else {
+            decks[i] = nullptr;
+        }
+    }
+}
+
+
+MixingEngineService& MixingEngineService::operator=(const MixingEngineService& other) {
+    #ifdef DEBUG
+    std::cout << "[MixingEngineService] Copy assignment called\n";
+    #endif
+
+    if (this != &other) {
+        for (size_t i = 0; i < 2; ++i) {
+            delete decks[i];
+            decks[i] = nullptr;
+        }
+
+        for (size_t i = 0; i < 2; ++i) {
+            if (other.decks[i] != nullptr) {
+                decks[i] = other.decks[i] ? other.decks[i]->clone().release() : nullptr;
+            } else {
+                decks[i] = nullptr;
+            }
+        }
+
+        active_deck = other.active_deck;
+        auto_sync = other.auto_sync;
+        bpm_tolerance = other.bpm_tolerance;
+    }
+
+    return *this;
 }
 
 
@@ -57,7 +104,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
 
     cloned_track->load();
     cloned_track->analyze_beatgrid();
-
+    
     if(decks[active_deck] != nullptr && auto_sync && !can_mix_tracks(cloned_track)){
         sync_bpm(cloned_track);
     }
@@ -65,7 +112,8 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
     decks[target] = cloned_track.release();
     std::cout << "[Load Complete] '" << decks[target]->get_title() 
               << "' is now loaded on deck " << target << "\n";
-    if(decks[active_deck] != nullptr && active_deck != target){
+
+    if(decks[active_deck] != nullptr){
         std::cout << "[Unload] Unloading previous deck " << active_deck 
               << " (" << decks[active_deck]->get_title() << ")\n";
         delete decks[active_deck];
