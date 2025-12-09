@@ -44,18 +44,41 @@ Playlist:: Playlist(const Playlist& other) : head(nullptr), playlist_name(other.
  * Copy Assignment operator
  */
 Playlist& Playlist::operator=(const Playlist& other) {
-    if (this != &other) {
-        while (head != nullptr) {
-            remove_track(head->track->get_title());
+    if (this == &other) {
+        return *this; 
+    }
+
+    //cleaning this
+    PlaylistNode* current = head;
+    while (current) {
+        PlaylistNode* next = current->next;
+        delete current->track;
+        delete current;
+        current = next;
+    }
+    head = nullptr;
+    track_count = 0;
+
+    // coping and cloning other
+    playlist_name = other.playlist_name;
+    PlaylistNode* tail = nullptr;
+    for (AudioTrack* t : other.getTracks()) {
+        PointerWrapper<AudioTrack> cloned = t->clone();
+        if (!cloned) {
+            std::cerr << "[ERROR] Failed to clone track in operator=\n";
+            continue;
         }
-        playlist_name = other.playlist_name;
-        PlaylistNode* current = other.head;
-        while (current != nullptr) {
-        PointerWrapper<AudioTrack> cloned_wrapper = current->track->clone();
-        AudioTrack* cloned_track = cloned_wrapper.release();
-        add_track(cloned_track);
-        current = current->next;
+        //creating new this
+        PlaylistNode* newNode = new PlaylistNode(cloned.release());
+
+        if (!head) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            tail->next = newNode;
+            tail = newNode;
         }
+        ++track_count;
     }
     return *this;
 }

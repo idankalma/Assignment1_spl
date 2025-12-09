@@ -37,6 +37,7 @@ bool DJSession::load_playlist(const std::string& playlist_name)  {
         std::cerr << "[ERROR] Playlist '" << playlist_name << "' not found in configuration.\n";
         return false;
     }
+
     
     // Load playlist from track indices
     library_service.loadPlaylistFromIndices(playlist_name, it->second);
@@ -45,7 +46,11 @@ bool DJSession::load_playlist(const std::string& playlist_name)  {
         return false;
     }
     
+    track_titles.clear();
+
     track_titles = library_service.getTrackTitles();
+
+    std::reverse(track_titles.begin(), track_titles.end());
     return true;
 }
 
@@ -165,7 +170,6 @@ void DJSession::simulate_dj_performance() {
     std::cout << "Cache Capacity: " << session_config.controller_cache_size << " slots (LRU policy)" << std::endl;
     std::cout << "\n--- Processing Tracks ---" << std::endl;
 
-    std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
     // Your implementation here
 
     bool session_running = true;
@@ -185,6 +189,7 @@ void DJSession::simulate_dj_performance() {
             if(user_selection.empty()){
             break;
             }
+            playlists_to_process.push_back(user_selection);
         }
         for (const auto& playlist_name : playlists_to_process) {
             bool is_loaded = load_playlist(playlist_name);
@@ -193,16 +198,14 @@ void DJSession::simulate_dj_performance() {
             }
             
             for(const auto& track_title : track_titles){
-                std::cout << "\n-- Processing: " << track_title << " --" << std::endl;
+                std::cout << "\n--- Processing: " << track_title << " ---" << std::endl;
                 stats.tracks_processed++;    
-                [[maybe_unused]] int cache_result = load_track_to_controller(track_title);
-                bool deck_result = load_track_to_mixer_deck(track_title);
-                if(!deck_result){
-                    continue;
-                }
+                load_track_to_controller(track_title);
+                controller_service.displayCacheStatus();
+                load_track_to_mixer_deck(track_title);
+                mixing_service.displayDeckStatus();
             }
             print_session_summary();
-            stats = SessionStats();
         }
         if (play_all) {
         session_running = false;

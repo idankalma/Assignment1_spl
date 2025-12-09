@@ -105,7 +105,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
     cloned_track->load();
     cloned_track->analyze_beatgrid();
     
-    if(decks[active_deck] != nullptr && auto_sync && !can_mix_tracks(cloned_track)){
+    if(auto_sync && !can_mix_tracks(cloned_track)){
         sync_bpm(cloned_track);
     }
 
@@ -113,12 +113,6 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
     std::cout << "[Load Complete] '" << decks[target]->get_title() 
               << "' is now loaded on deck " << target << "\n";
 
-    if(decks[active_deck] != nullptr){
-        std::cout << "[Unload] Unloading previous deck " << active_deck 
-              << " (" << decks[active_deck]->get_title() << ")\n";
-        delete decks[active_deck];
-        decks[active_deck] = nullptr;
-    }
 
     active_deck = target;
     std::cout << "[Active Deck] Switched to deck " << active_deck << "\n";
@@ -134,8 +128,9 @@ void MixingEngineService::displayDeckStatus() const {
     for (size_t i = 0; i < 2; ++i) {
         if (decks[i])
             std::cout << "Deck " << i << ": " << decks[i]->get_title() << "\n";
-        else
+        else{
             std::cout << "Deck " << i << ": [EMPTY]\n";
+        }
     }
     std::cout << "Active Deck: " << active_deck << "\n";
     std::cout << "===================\n";
@@ -170,10 +165,12 @@ bool MixingEngineService::can_mix_tracks(const PointerWrapper<AudioTrack>& track
 void MixingEngineService::sync_bpm(const PointerWrapper<AudioTrack>& track) const {
     // Your implementation here
     if(decks[active_deck] == nullptr){
+        std::cout << "[Sync BPM] Cannot sync - one of the decks is empty.\n";
         return;
     }
 
     if(track.get() == nullptr){
+        std::cout << "[Sync BPM] Cannot sync - one of the decks is empty.\n";
         return;
     }
 
@@ -182,6 +179,6 @@ void MixingEngineService::sync_bpm(const PointerWrapper<AudioTrack>& track) cons
     double avg_bpm = (original_bpm + active_bpm)/2.0;
     track.get()->set_bpm((int)avg_bpm);
 
-    std::cout << "[Sync BPM] Syncing BPM from " << original_bpm 
-              << " to " << avg_bpm << "\n";
+    std::cout << "[Sync BPM] Syncing BPM from " << (int)original_bpm 
+              << " to " << (int)avg_bpm << "\n";
 }
