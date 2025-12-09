@@ -102,7 +102,7 @@ public:
      */
     T* operator->() const {
         if(ptr == nullptr){
-            throw std::runtime_error("Trying to access pointer that is null");
+            throw std::runtime_error("Pointer is null");
         }
         return ptr;
     }

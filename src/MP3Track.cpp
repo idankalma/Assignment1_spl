@@ -16,10 +16,10 @@ void MP3Track::load() {
     std::cout << "[MP3Track::load] Loading MP3: \"" << title
               << "\" at " << bitrate << " kbps...\n";
     if (has_id3_tags) {
-        std::cout << "  → Processing ID3 metadata (artist info, album art, etc.)... \n";
+        std::cout << "  → Processing ID3 metadata (artist info, album art, etc.)...\n";
     } 
     else {
-        std::cout << " → No ID3 tags found. \n";
+        std::cout << "  → No ID3 tags found. \n";
     }
 
     std::cout << "  → Decoding MP3 frames...\n";
@@ -35,33 +35,33 @@ void MP3Track::analyze_beatgrid() {
      std::cout << "[MP3Track::analyze_beatgrid] Analyzing beat grid for: \"" << title << "\"\n";
     // TODO: Implement MP3-specific beat detection analysis
     // NOTE: Use exactly 2 spaces before each arrow (→) character
-    double beats_estimated = static_cast<double> (((duration_seconds) / 60.0) * bpm);
+    double beats_estimated = ((duration_seconds) / 60.0) * bpm;
 
-    double precision_factor = static_cast<double> ((bitrate) / 60.0);
+    double precision_factor = (bitrate) / 320.0;
 
-    std::cout << "  → Estimated beats: " << beats_estimated << "  → Compression precision factor: " << precision_factor << "\n";
+    std::cout << "  → Estimated beats: " << (int)beats_estimated << "  → Compression precision factor: " << precision_factor << "\n";
 }
 
 double MP3Track::get_quality_score() const {
     // TODO: Implement comprehensive quality scoring
     // NOTE: This method does NOT print anything
 
-    double base_score = static_cast<double> (bitrate / 320.00 ) * 100.00;
+    double base_score = (bitrate / 320.0 ) * 100.0;
 
-    if(has_id3_tags){
+    if (has_id3_tags){
         base_score = base_score + 5;
     }
 
-    if(bitrate < 128){
-        base_score = base_score- 10;
+    if (bitrate < 128){
+        base_score = base_score - 10;
     }
 
-    if(base_score < 0){
-        base_score = 0.00;
+    if (base_score < 0){
+        base_score = 0.0;
     }
 
-        if(base_score > 100){
-        base_score = 100.00;
+    if(base_score > 100){
+        base_score = 100.0;
     }
     return base_score;
 }

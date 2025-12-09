@@ -43,12 +43,12 @@ public:
     /**
      * Copy Costructor
      */
-    /*Playlist(const Playlist& other);*/
+    Playlist(const Playlist& other);
 
     /**
     * Copy Assignment Operator
     */
-    /*Playlist& operator=(const Playlist& other);*/
+    Playlist& operator=(const Playlist& other);
 
     /**
      * Add a track to the playlist
@@ -95,6 +95,13 @@ public:
      * Get all tracks as a vector
      */
     std::vector<AudioTrack*> getTracks() const;
+
+    /**
+     * Get the head node of the playlist
+     */
+    PlaylistNode* getHead() const {
+        return head;
+    }
 
 };
 
