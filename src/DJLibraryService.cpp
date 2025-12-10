@@ -14,6 +14,14 @@ DJLibraryService::DJLibraryService(const Playlist& playlist)
  * @brief Load a playlist from track indices referencing the library
  * @param library_tracks Vector of track info from config
  */
+
+ DJLibraryService::~DJLibraryService() {
+    for (AudioTrack* track : library) {
+        delete track;
+    }
+    library.clear();
+}
+
 void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>& library_tracks) {
     //Todo: Implement buildLibrary method
     for(size_t i = 0; i < library_tracks.size(); i++){
